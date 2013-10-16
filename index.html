@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UML Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.css" media="screen">
+    <style type="text/css">
+        #canvas-container {
+            background: #F0F;
+            width: 100%;
+            height: 100%;
+
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+      <![endif]-->
+  </head>
+  <body>
+    <button type="button" class="btn btn-primary" onclick="lexer.uml.view.createClassView()" >Go!</button>
+    <div id="canvas-container">
+        <svg id="svg-canvas"xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <style>
+            .fo {
+
+            }
+
+            .class-view {
+                display: inline-block;
+                background: #FFFFBF;
+                font-family: monospace;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            .class-view div {
+                border: 1px solid;
+                border-color: #ABABAB;
+                cursor: move;
+            }
+
+            .class-view p {
+                margin: 0;
+            }
+
+            .drag {
+                display: none;
+            }
+
+        </style>
+        <script xmlns="http://www.w3.org/2000/svg" type="text/ecmascript"><![CDATA[
+            var lexer = lexer || {};
+            lexer.svg = lexer.svg || {};
+            lexer.svg.styling = lexer.svg.styling || {};
+
+            (function(scope, $, undefined){
+                "use strict";
+
+                scope.addClass = function(element, cssClass) {
+                    var attr = element.getAttribute("class");
+                    if(attr.indexOf(cssClass) === -1){
+                        element.setAttribute("class", attr + " " + cssClass);
+                    }
+                };
+
+                scope.removeClass = function(element, cssClass) {
+                    var attr = element.getAttribute("class");
+                    var newAttr = attr.replace(cssClass, "");
+                    element.setAttribute("class", newAttr);
+                };
+            })(lexer.svg.styling, $, undefined);
+
+            lexer.svg.drag = lexer.svg.drag || {};
+            (function(scope, $, undefined){
+                var selectedElement = 0;
+                var offsetX = 0;
+                var offsetY = 0;
+                var svgElement = document.getElementById("svg-canvas");
+
+                var mouseMoveListener = function(e) {
+                    var x = (e.pageX - offsetX) / svgElement.currentScale;
+                    var y = (e.pageY - offsetY) / svgElement.currentScale;
+                    selectedElement.setAttributeNS(null, "transform", "translate(" + x  + ", " + y + ")");
+                };
+                
+                var mouseUpLitener = function(e) {
+                    document.removeEventListener("mousemove", mouseMoveListener);
+                    document.removeEventListener("mouseup", mouseUpLitener);
+
+                    lexer.svg.styling.removeClass(selectedElement, "drag");
+                };
+
+                scope.startMoveElement = function(e) {
+                    selectedElement = $(e.target).closest(".fo")[0];
+                    if(typeof selectedElement == 'undefined'){
+                        return;
+                    }
+                    document.addEventListener("mousemove", mouseMoveListener);
+                    document.addEventListener("mouseup", mouseUpLitener);
+                    offsetX = $("#svg-canvas").position().left - ($(selectedElement).position().left - e.pageX);
+                    offsetY = $("#svg-canvas").position().top - ($(selectedElement).position().top - e.pageY);
+
+                    lexer.svg.styling.addClass(selectedElement, "drag");
+                };
+            })(lexer.svg.drag, $, undefined);
+        ]]></script>
+        </svg>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal" id="editTextModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Edit Text</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" onSubmit="return lexer.uml.edit.onTextEditSubmit()">
+                        <div class="form-group">
+                            <label for="textInput" class="col-lg-2 control-label">Text</label>
+                            <div class="col-lg-10">
+                                <input id="edit-text-input"type="text" class="form-control" id="textInput" autofocus="true" placeholder="...">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="lexer.uml.edit.onTextEditSubmit()" >OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        window.lexer = window.lexer || {};
+        window.lexer.uml = window.lexer.uml || {};
+
+        //text editing modal dialogue
+        (function(scope, $, undefined){
+
+            var currentTextNode;
+
+            scope.onTextEditSubmit = function()
+            {
+                $("#editTextModal").modal("hide");
+                currentTextNode.textContent = $("#edit-text-input").val();
+                return false;
+            };
+
+            scope.editNodeText = function(node) {
+                currentTextNode = node;
+                uml.showTextEditDialogue(node.textContent)
+            };
+
+            scope.showTextEditDialogue = function(defaultText) {
+                $("#editTextModal").modal({});
+                
+                var input = $("#edit-text-input"); 
+                input.val(defaultText);
+                input.focus();
+                input.select();
+            };
+
+        })(window.lexer.uml.edit = window.lexer.uml.edit || {}, $, undefined);
+
+        //raphael 
+        (function(scope, $, undefined){
+            scope.createClassView = function(){
+
+                $("#svg-canvas").append('<foreignObject class="fo" width="100%" height="100%" transform="matrix(1 0 0 1 0 0)" onmousedown="lexer.svg.drag.startMoveElement(evt)">\
+                    <body xmlns="http://www.w3.org/1999/xhtml">\
+                        <div class="class-view">\
+                            <div>Class Name</div>\
+                            <div>\
+                                <p>- m_className : string</p>\
+                                <p>- m_classId : int</p>\
+                            </div>\
+                            <div>\
+                                <p>+ getClassName(string)</p>\
+                                <p>+ getClassId(int)</p>\
+                            </div>\
+                        </div>\
+                    </body>\
+                </foreignObject>\
+                    ');
+                $("#canvas-container").html($("#canvas-container").html());
+            };
+            
+        })(window.lexer.uml.view = window.lexer.view || {}, $, undefined);
+    </script>
+  </body>
+</html>
+
+<!-- Fictitious Quotes
+
+I aint writing no UML foo'
+- Mr T
+
+-->
