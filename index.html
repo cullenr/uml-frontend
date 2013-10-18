@@ -34,28 +34,25 @@
             }
 
             .class-view {
-                display: inline-block;
                 background: #FFFFBF;
-                font-family: monospace;
+                border: 3px;
+                border-style: solid;
+                border-color: #ABABAB;
+                cursor: move;
+            }     
+
+            .class-view tbody{
+                border-top: 3px;
+                border-style: solid;
+                border-color: #ABABAB;
+            }
+
+            .drag {
                 -webkit-user-select: none;
                 -khtml-user-select: none;
                 -moz-user-select: none;
                 -ms-user-select: none;
                 user-select: none;
-            }
-
-            .class-view div {
-                border: 1px solid;
-                border-color: #ABABAB;
-                cursor: move;
-            }
-
-            .class-view p {
-                margin: 0;
-            }
-
-            .drag {
-                display: none;
             }
 
         </style>
@@ -70,7 +67,7 @@
                 scope.addClass = function(element, cssClass) {
                     var attr = element.getAttribute("class");
                     if(attr.indexOf(cssClass) === -1){
-                        element.setAttribute("class", attr + " " + cssClass);
+                        element.setAttribute("class", attr += attr.slice(-1) === " " ? cssClass : " " + cssClass);
                     }
                 };
 
@@ -184,18 +181,18 @@
 
                 $("#svg-canvas").append('<foreignObject class="fo" width="100%" height="100%" transform="matrix(1 0 0 1 0 0)" onmousedown="lexer.svg.drag.startMoveElement(evt)">\
                     <body xmlns="http://www.w3.org/1999/xhtml">\
-                        <div class="class-view">\
-                            <div>Class Name</div>\
-                            <div>\
-                                <p>- m_className : string</p>\
-                                <p>- m_classId : int</p>\
-                            </div>\
-                            <div>\
-                                <p>+ getClassName(string)</p>\
-                                <p>+ getClassId(int)</p>\
-                            </div>\
-                        </div>\
-                    </body>\
+                        <table class="class-view">\
+                            <thead><tr><td>ClassName</tr></td></thead>\
+                            <tbody>\
+                                <tr><td>- m_className : string</tr></td>\
+                                <tr><td>- m_classId : int</tr></td>\
+                            </tbody>\
+                            <tbody>\
+                                <tr><td>+ getClassName(string)</tr></td>\
+                                <tr><td>+ getClassId(int)</tr></td>\
+                            </tbody>\
+                        </table>\
+                        </body>\
                 </foreignObject>\
                     ');
                 $("#canvas-container").html($("#canvas-container").html());
@@ -203,6 +200,20 @@
             
         })(window.lexer.uml.view = window.lexer.view || {}, $, undefined);
     </script>
+
+    <table>
+        <thead><tr><td>ClassName</tr></td></thead>
+        <tbody>
+            <tr><td>- m_className : string</tr></td>
+            <tr><td>- m_classId : int</tr></td>
+        </tbody>
+        <tbody>
+            <tr><td>+ getClassName(string)</tr></td>
+            <tr><td>+ getClassId(int)</tr></td>
+        </tbody>
+    </table>
+                                
+
   </body>
 </html>
 
