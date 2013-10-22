@@ -17,4 +17,4 @@ This is an attempt at making an html based UML editor. I could not find a good a
 
 ##Limitations
 
-This software is not designed to run on IE, if it does thats just good fortunate.
+This software is not designed to run on IE, if it does thats just good fortune.
