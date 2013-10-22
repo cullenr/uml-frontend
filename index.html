@@ -27,7 +27,7 @@
   <body>
     <button type="button" class="btn btn-primary" onclick="lexer.uml.classView.createView()" >Go!</button>
     <div id="canvas-container">
-        <svg id="svg-canvas" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <svg id="svg-canvas" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" currentScale="1.0">
         <style>
             .fo {
 
@@ -149,8 +149,7 @@
         window.lexer.uml = window.lexer.uml || {};
 
         (function(scope, $, undefined){
-            var defaultClassView = '<foreignObject class="fo" width="100%" height="100%" transform="matrix(1 0 0 1 0 0)" onmousedown="lexer.svg.drag.startMoveElement(evt)">\
-                    <body xmlns="http://www.w3.org/1999/xhtml">\
+            var defaultClassView = '<foreignObject class="fo" width="100%" height="100%" transform="matrix(1 0 0 1 0 0)" onmousedown="lexer.svg.drag.startMoveElement(evt)" contenteditable="true">\
     <table class="class-view-container">\
         <tbody>\
             <tr>\
@@ -197,7 +196,6 @@
             </tr>\
         </tbody>\
     </table>\
-    </body>\
     </foreignObject>\
             ';
             var defaultPropertyView = '<tr class="property">\
