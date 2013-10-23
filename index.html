@@ -7,17 +7,18 @@
     <style type="text/css">
         #canvas-container {
             background: #F0F;
-            width: 100%;
-            height: 100%;
+            width: 1024px;
+            height: 1024px;
 
-            -webkit-user-select: none;
+/*            -webkit-user-select: none;
             -khtml-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
-            user-select: none;
+            user-select: none;*/
         }
     </style>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="../../assets/js/html5shiv.js"></script>
@@ -27,14 +28,15 @@
   <body>
     <button type="button" class="btn btn-primary" onclick="lexer.uml.classView.createView()" >Go!</button>
     <div id="canvas-container">
-        <svg id="svg-canvas" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" currentScale="1.0">
+        <svg id="svg-canvas" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" width="1024px" height="1024px" viewBox="0 0 1024 1024" currentScale="1.0">
         <style>
             .fo {
 
             }
 
             .class-view-container {
-                text-align: center;    
+                text-align: center;
+                position: static;   
             }
 
             .class-view {
@@ -61,13 +63,13 @@
                 cursor: pointer;
             }
 
-            .class-view-container:hover .tool{
-                color: #000000;
-            }
-
             .add-link-tool {
                 visibility: hidden;
                 cursor: pointer;
+            }
+
+            .class-view-container:hover .tool{
+                color: #000000;
             }
             
             .class-view-container:hover .add-link-tool{
@@ -115,14 +117,21 @@
                 var mouseMoveListener = function(e) {
                     var x = (e.pageX - offsetX) / svgElement.currentScale;
                     var y = (e.pageY - offsetY) / svgElement.currentScale;
-                    selectedElement.setAttributeNS(null, "transform", "translate(" + x  + ", " + y + ")");
+                    //selectedElement.setAttributeNS(null, "transform", "translate(" + x  + ", " + y + ")");
+
+                    selectedElement.setAttribute("x", x);
+                    selectedElement.setAttribute("y", y);
+
+                    return false;
                 };
                 
                 var mouseUpLitener = function(e) {
                     document.removeEventListener("mousemove", mouseMoveListener);
                     document.removeEventListener("mouseup", mouseUpLitener);
+ 
+                    lexer.svg.styling.removeClass(selectedElement, "drag");                        
 
-                    lexer.svg.styling.removeClass(selectedElement, "drag");
+                    return true;
                 };
 
                 scope.startMoveElement = function(e) {
@@ -136,6 +145,8 @@
                     offsetY = $("#svg-canvas").position().top - ($(selectedElement).position().top - e.pageY);
 
                     lexer.svg.styling.addClass(selectedElement, "drag");
+
+                    return true;
                 };
             })(lexer.svg.drag, $, undefined);
         ]]></script>
@@ -149,64 +160,78 @@
         window.lexer.uml = window.lexer.uml || {};
 
         (function(scope, $, undefined){
-            var defaultClassView = '<foreignObject class="fo" width="100%" height="100%" transform="matrix(1 0 0 1 0 0)" onmousedown="lexer.svg.drag.startMoveElement(evt)" contenteditable="true">\
-    <table class="class-view-container">\
-        <tbody>\
-            <tr>\
-                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-            </tr>\
-            <tr>\
-                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                <td>\
-                    <table class="class-view">\
-                        <thead>\
-                            <tr>\
-                                <td class="property" onmouseup="lexer.uml.classView.updateProperty(event)" contenteditable="true">Class</td>\
-                                <td></td>\
-                                <td></td>\
-                                <td class="tool" onmouseup="lexer.uml.classView.deleteView(event)" title="Delete class">&#x2716;</td>\
-                            </tr>\
-                        </thead>\
+            var defaultClassView = '<foreignObject xmlns="http://www.w3.org/2000/svg" class="fo" width="1024px" height="1024px" transform="matrix(1, 1)" >\
+            <html xmlns="http://www.w3.org/1999/xhtml">\
+                <body>\
+                    <table xmlns="http://www.w3.org/1999/xhtml" class="class-view-container" onmousedown="lexer.svg.drag.startMoveElement(event)" >\
                         <tbody>\
                             <tr>\
-                                <td></td>\
-                                <td></td>\
-                                <td></td>\
-                                <td class="tool" onmouseup="lexer.uml.classView.createProperty(event)" title="Add property">&#x271a;</td>\
+                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
                             </tr>\
-                        </tbody>\
-                        <tbody>\
                             <tr>\
-                                <td></td>\
-                                <td></td>\
-                                <td></td>\
-                                <td class="tool" onmouseup="lexer.uml.classView.createProperty(event)" title="Add property">&#x271a;</td>\
+                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                                <td>\
+                                    <table class="class-view">\
+                                        <thead>\
+                                            <tr>\
+                                                <td class="property" onmouseup="lexer.uml.classView.updateProperty(event)" contenteditable="true">Class</td>\
+                                                <td></td>\
+                                                <td></td>\
+                                                <td class="tool" onmouseup="lexer.uml.classView.deleteView(event)" title="Delete class">&#x2716;</td>\
+                                            </tr>\
+                                        </thead>\
+                                        <tbody>\
+                                            <tr>\
+                                                <td></td>\
+                                                <td></td>\
+                                                <td></td>\
+                                                <td class="tool" onmouseup="lexer.uml.classView.createProperty(event)" title="Add property">&#x271a;</td>\
+                                            </tr>\
+                                        </tbody>\
+                                        <tbody>\
+                                            <tr>\
+                                                <td></td>\
+                                                <td></td>\
+                                                <td></td>\
+                                                <td class="tool" onmouseup="lexer.uml.classView.createProperty(event)" title="Add property">&#x271a;</td>\
+                                            </tr>\
+                                        </tbody>\
+                                    </table>\
+                                </td>\
+                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                            </tr>\
+                            <tr>\
+                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
                             </tr>\
                         </tbody>\
                     </table>\
-                </td>\
-                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-            </tr>\
-            <tr>\
-                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-            </tr>\
-        </tbody>\
-    </table>\
-    </foreignObject>\
-            ';
+                </body>\
+            </html>\
+        </foreignObject>';
             var defaultPropertyView = '<tr class="property">\
-                                <td onmouseup="lexer.uml.classView.updateProperty(event)" contenteditable="true">...</td>\
+                                <td contenteditable="true">...</td>\
                                 <td class="tool" onmouseup="lexer.uml.classView.movePropertyUp(event)" title="Move property up">&#x25b2;</td>\
                                 <td class="tool" onmouseup="lexer.uml.classView.movePropertyDown(event)" title="Move property down">&#x25bc;</td>\
                                 <td class="tool" onmouseup="lexer.uml.classView.deleteProperty(event)" title="Delete property">&#x2716;</td>\
                             </tr>';
 
             scope.createView = function(){
-                $("#svg-canvas").append(defaultClassView);
+                var cv = $(defaultClassView);
+                
+                $(cv).on("click", function(event){
+                    console.log(event)}
+                    );
+
+
+
+                //onmousedown="lexer.svg.drag.startMoveElement(evt)"
+
+                $("#svg-canvas").append(cv);
+                //cv.bind("mousedown", lexer.svg.drag.startMoveElement);
                 $("#canvas-container").html($("#canvas-container").html());
             };
             
@@ -228,8 +253,9 @@
             };
 
             scope.updateProperty = function(evt){
-                
-            };
+
+
+            }
 
             scope.movePropertyUp = function(evt){
                 var parent = $(evt.target).parent();
@@ -247,7 +273,7 @@
 
         })(window.lexer.uml.classView = window.lexer.uml.classView || {}, $, undefined);
     </script>                                
-    <div class="fo">
+    <!-- <div id="test" class="fo">
     <table class="class-view-container">
         <tbody>
             <tr>
@@ -261,7 +287,7 @@
                     <table class="class-view">
                         <thead>
                             <tr>
-                                <td class="property" onmouseup="lexer.uml.classView.updateProperty(event)" contenteditable="true">Class</td>
+                                <td class="property"contenteditable="true">Class</td>
                                 <td></td>
                                 <td></td>
                                 <td class="tool" onmouseup="lexer.uml.classView.deleteView(event)" title="Delete class">&#x2716;</td>
@@ -295,7 +321,7 @@
         </tbody>
     </table>
         
-    </div>
+    </div> -->
   </body>
 </html>
 
