@@ -9,16 +9,9 @@
             background: #F0F;
             width: 1024px;
             height: 1024px;
-
-/*            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;*/
         }
     </style>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script src="js/jquery-2.0.3.min.js"></script>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="../../assets/js/html5shiv.js"></script>
@@ -27,6 +20,7 @@
   </head>
   <body>
     <button type="button" class="btn btn-primary" onclick="lexer.uml.classView.createView()" >Go!</button>
+
     <div id="canvas-container">
         <svg id="svg-canvas" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" width="1024px" height="1024px" viewBox="0 0 1024 1024" currentScale="1.0">
         <style>
@@ -51,6 +45,7 @@
                 border-top: 3px;
                 border-style: solid;
                 border-color: #ABABAB;
+
             }
 
             .property {
@@ -66,6 +61,13 @@
             .add-link-tool {
                 visibility: hidden;
                 cursor: pointer;
+                height: 33%;
+                vertical-align: middle;
+            }
+
+            .v-link-tool-container {
+                height: 80px;
+                line-height: 80px;
             }
 
             .class-view-container:hover .tool{
@@ -83,7 +85,21 @@
                 -ms-user-select: none;
                 user-select: none;
             }
+
+            .v-centre {
+                display: table-cell; vertical-align: middle 
+            }
         </style>
+        <defs>
+            <marker id="Triangle"
+                    viewBox="0 0 10 10" 
+                    refX="1" refY="5"
+                    markerWidth="6" 
+                    markerHeight="6"
+                    orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+            </marker>
+        </defs>
         <script xmlns="http://www.w3.org/2000/svg" type="text/ecmascript"><![CDATA[
             "use strict";
             
@@ -92,7 +108,6 @@
             lexer.svg.styling = lexer.svg.styling || {};
 
             (function(scope, $, undefined){
-
                 scope.addClass = function(element, cssClass) {
                     var attr = element.getAttribute("class");
                     if(attr.indexOf(cssClass) === -1){
@@ -152,28 +167,32 @@
         ]]></script>
         </svg>
     </div>
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         window.lexer = window.lexer || {};
         window.lexer.uml = window.lexer.uml || {};
 
         (function(scope, $, undefined){
-            var defaultClassView = '<foreignObject xmlns="http://www.w3.org/2000/svg" class="fo" width="1024px" height="1024px" transform="matrix(1, 1)" >\
+            var defaultClassView = '<foreignObject xmlns="http://www.w3.org/2000/svg" class="fo" width="1024px" height="1024px" >\
             <html xmlns="http://www.w3.org/1999/xhtml">\
                 <body>\
-                    <table xmlns="http://www.w3.org/1999/xhtml" class="class-view-container" onmousedown="lexer.svg.drag.startMoveElement(event)" >\
+                    <table xmlns="http://www.w3.org/1999/xhtml" class="class-view-container" >\
                         <tbody>\
                             <tr>\
-                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
                             </tr>\
                             <tr>\
-                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                                <td>\
-                                    <table class="class-view">\
+                                <td class="v-link-tool-container" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">\
+                                    <div></div>\
+                                    <div class="add-link-tool" ><div class="v-centre">&#x271a;</div></div>\
+                                    <div class="add-link-tool" ><div class="v-centre">&#x271a;</div></div>\
+                                    <div class="add-link-tool" ><div class="v-centre">&#x271a;</div></div>\
+                                </td>\
+                                <td colspan="3">\
+                                    <table class="class-view"  onmousedown="lexer.svg.drag.startMoveElement(event)">\
                                         <thead>\
                                             <tr>\
                                                 <td class="property" onmouseup="lexer.uml.classView.updateProperty(event)" contenteditable="true">Class</td>\
@@ -200,12 +219,18 @@
                                         </tbody>\
                                     </table>\
                                 </td>\
-                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                                <td class="v-link-tool-container" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">\
+                                    <div class="add-link-tool" >&#x271a;</div>\
+                                    <div class="add-link-tool" >&#x271a;</div>\
+                                    <div class="add-link-tool" >&#x271a;</div>\
+                                </td>\
                             </tr>\
                             <tr>\
-                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
-                                <td class="add-link-tool" title="Add link">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
+                                <td class="add-link-tool" onmouseup="lexer.uml.relation.onRelationPressed(event)" title="Add relation">&#x271a;</td>\
                             </tr>\
                         </tbody>\
                     </table>\
@@ -220,108 +245,82 @@
                             </tr>';
 
             scope.createView = function(){
-                var cv = $(defaultClassView);
-                
-                $(cv).on("click", function(event){
-                    console.log(event)}
-                    );
-
-
-
-                //onmousedown="lexer.svg.drag.startMoveElement(evt)"
-
-                $("#svg-canvas").append(cv);
-                //cv.bind("mousedown", lexer.svg.drag.startMoveElement);
+                $("#svg-canvas").append(defaultClassView);
                 $("#canvas-container").html($("#canvas-container").html());
             };
             
-            scope.deleteView = function(evt){
-                var element = $(evt.target).closest(".fo").first();
+            scope.deleteView = function(e){
+                var element = $(e.target).closest(".fo").first();
                 if(typeof element !== "undefined") {
                     element.remove();
                 }
             };
 
-            scope.deleteProperty = function(evt){
-                $(evt.target).parent().remove();
+            scope.deleteProperty = function(e){
+                $(e.target).parent().remove();
             };
 
-            scope.createProperty = function(evt){
-                var parent = $(evt.target).parent();
-                console.log(parent);
+            scope.createProperty = function(e){
+                var parent = $(e.target).parent();
                 parent.before(defaultPropertyView);
+
+                var container = $(parent).closest(".fo").first();
+                layoutRelationshipButtons(container);
             };
 
-            scope.updateProperty = function(evt){
-
-
-            }
-
-            scope.movePropertyUp = function(evt){
-                var parent = $(evt.target).parent();
+            scope.movePropertyUp = function(e){
+                var parent = $(e.target).parent();
                 if(parent.prev().is(".property")) {
                     parent.insertBefore(parent.prev());     
                 }
             };
 
-            scope.movePropertyDown = function(evt){
-                var parent = $(evt.target).parent();
+            scope.movePropertyDown = function(e){
+                var parent = $(e.target).parent();
                 if(parent.next().is(".property")) {
                     parent.insertAfter(parent.next());     
                 }
             };
 
+            function layoutRelationshipButtons(classContainer) {
+
+            }
+
         })(window.lexer.uml.classView = window.lexer.uml.classView || {}, $, undefined);
+
+        (function(scope, $, undefined){
+            var defaultRelation = '<g>\
+                    <circle class="relation-start" r="5" />\
+                    <polyline fill="none" stroke="black" marker-end="url(#Triangle)" points="0,0 0,0"/>\
+                </g>';
+            var startedRelation = 0;
+
+            scope.onRelationPressed = function(e){
+                var selectedElement = e.target;
+                var relation = $(defaultRelation);
+                var offsetX = $("#svg-canvas").position().left;
+                var offsetY = $("#svg-canvas").position().top;
+                relation.children(".relation-start").attr("cx", e.pageX - offsetX);
+                relation.children(".relation-start").attr("cy", e.pageY - offsetY);
+                $("#svg-canvas").append(relation);
+                $("#canvas-container").html($("#canvas-container").html());
+            };
+
+            function finisheRelation(e){
+                console.log(e);
+
+                startedRelation = 0;
+            };
+
+            function startRelation(e){
+                console.log(e);
+
+                startedRelation = 1;
+            };
+
+        })(window.lexer.uml.relation = window.lexer.uml.relation || {}, $, undefined);
+
     </script>                                
-    <!-- <div id="test" class="fo">
-    <table class="class-view-container">
-        <tbody>
-            <tr>
-                <td class="add-link-tool" title="Add link">&#x271a;</td>
-                <td class="add-link-tool" title="Add link">&#x271a;</td>
-                <td class="add-link-tool" title="Add link">&#x271a;</td>
-            </tr>
-            <tr>
-                <td class="add-link-tool" title="Add link">&#x271a;</td>
-                <td>
-                    <table class="class-view">
-                        <thead>
-                            <tr>
-                                <td class="property"contenteditable="true">Class</td>
-                                <td></td>
-                                <td></td>
-                                <td class="tool" onmouseup="lexer.uml.classView.deleteView(event)" title="Delete class">&#x2716;</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td class="tool" onmouseup="lexer.uml.classView.createProperty(event)" title="Add property">&#x271a;</td>
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td class="tool" onmouseup="lexer.uml.classView.createProperty(event)" title="Add property">&#x271a;</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-                <td class="add-link-tool" title="Add link">&#x271a;</td>
-            </tr>
-            <tr>
-                <td class="add-link-tool" title="Add link">&#x271a;</td>
-                <td class="add-link-tool" title="Add link">&#x271a;</td>
-                <td class="add-link-tool" title="Add link">&#x271a;</td>
-            </tr>
-        </tbody>
-    </table>
-        
-    </div> -->
   </body>
 </html>
 
